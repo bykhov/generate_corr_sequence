@@ -66,3 +66,6 @@ License
 -------
 
 This project is licensed under the [LICENSE NAME](LICENSE) license.
+
+.. tag:: tag_name
+
