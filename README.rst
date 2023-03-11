@@ -77,8 +77,9 @@ Any references or resources used to develop the function or related to the funct
 Contributors
 ------------
 
-- Your Name (https://github.com/your_username)
+- `Dima Bykhovsky <https://github.com/bykhov>`_
 - Contributor Name (https://github.com/contributor_username)
+- `Alexander Rudyak <https://github.com/AlexRudyak>`_
 
 License
 -------
