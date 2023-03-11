@@ -83,7 +83,7 @@ Contributors
 License
 -------
 
-This project is licensed under the `MIT <link URL>`_ license.
+This project is licensed under the `MIT <./LICENSE.md>`_ license.
 
 Examples
 =============
