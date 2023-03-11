@@ -1,3 +1,8 @@
+.. image:: https://raw.githubusercontent.com/bykhov/generate_corr_sequence/main/logo/ourLogo.svg?token=GHSAT0AAAAAAB74RL6DHDIWW4BWDP74CQTCZAMWVKA
+  :width: 110
+  :height: 110
+  :align: left
+
 Function Name
 =============
 
