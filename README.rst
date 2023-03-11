@@ -83,9 +83,7 @@ Contributors
 License
 -------
 
-This project is licensed under the [LICENSE NAME](LICENSE) license.
-
-.. tag:: tag_name
+This project is licensed under the `MIT <link URL>`_ license.
 
 Examples
 =============
