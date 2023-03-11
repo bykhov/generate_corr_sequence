@@ -3,11 +3,13 @@
   :height: 110
   :align: left
   
+.. image:: https://img.shields.io/badge/Creators-D.%20Bykhovsky%2C%20A.%20Rudyak%2C%20N.%20Tochilvosky-blue
+  :align: center
+  
 .. image:: https://img.shields.io/badge/Version-0.1-green
   :align: center
 
-.. image:: https://img.shields.io/badge/Creators-D.%20Bykhovsky%2C%20A.%20Rudyak%2C%20N.%20Tochilvosky-blue
-  :align: center
+|
   
 Generate_corr_sequence
 =============
@@ -26,6 +28,11 @@ This is a brief description of the module containing the function.
 Summary
 -------
 
+.. math::
+
+   (a + b)^2 = a^2 + 2ab + b^2
+   
+   
 A summary of the function and what it does.
 
 Usage
