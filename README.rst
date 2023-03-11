@@ -1,9 +1,15 @@
-.. image:: https://raw.githubusercontent.com/bykhov/generate_corr_sequence/main/logo/ourLogo.svg?token=GHSAT0AAAAAAB74RL6DHDIWW4BWDP74CQTCZAMWVKA
+.. image:: ./logo/ourLogo.svg
   :width: 110
   :height: 110
   :align: left
+  
+.. image:: https://img.shields.io/badge/Version-0.1-green
+  :align: center
 
-Function Name
+.. image:: https://img.shields.io/badge/Creators-D.%20Bykhovsky%2C%20A.%20Rudyak%2C%20N.%20Tochilvosky-blue
+  :align: center
+  
+Generate_corr_sequence
 =============
 
 .. module:: module_name
