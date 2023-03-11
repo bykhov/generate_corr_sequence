@@ -23,12 +23,12 @@ To work with it, the user needs to have a desired function
 
 For that purpose we made helper functions:
 
-1. ``findCoeff`` - find the d coefficients of a given distribution
-2. ``integration_function`` - a function that integrated over the non-inversed CDF solution
-3. ``find_ro_x`` - add roh_x explained # maybe change the function name?
-4. ``findFilter`` - find the required filter for the desired ACF
-5. ``get_ranked_sequence`` - rank match the sequence to get the desired ACF
-6. ``drawDebugPlots`` - if something doesnt work this might give an insight with plots about whats going on
+#. ``findCoeff`` - find the d coefficients of a given distribution
+#. ``integration_function`` - a function that integrated over the non-inversed CDF solution
+#. ``find_ro_x`` - add roh_x explained # maybe change the function name?
+#. ``findFilter`` - find the required filter for the desired ACF
+#. ``get_ranked_sequence`` - rank match the sequence to get the desired ACF
+#. ``drawDebugPlots`` - if something doesnt work this might give an insight with plots about whats going on
 
 Summary
 -------
@@ -49,8 +49,15 @@ How to use the function.
 Arguments
 ---------
 
-- ``arg1`` (type): Description of the first argument.
-- ``arg2`` (type): Description of the second argument.
+- |distribution-type| ``dist_obj`` - A distribution object from scipy.stats, default is ``uniform``.
+- |function-type| ``ro_y`` - A desired ACF function with ``m`` as variable, default is ``linear function``.
+- |int-type| ``L`` - Number of desired samples, default is ``2^20``.
+- |int-type| ``seed`` - Number as input for the random number generator, default is ``100``.
+- |bool-type| ``debug`` - Plots intermidiate graphs, also helps with visualization, default is ``False``.
+
+
+
+
 
 Returns
 -------
@@ -60,8 +67,6 @@ Returns
 Version History
 ---------------
 
-- Version X.X.X: Description of changes made in this version.
-- Version X.X.X: Description of changes made in this version.
 - Version X.X.X: Description of changes made in this version.
 
 See Also
@@ -102,5 +107,11 @@ When all values are default
   
 .. image:: ./examples/defaultacf.png
   :align: center
+
+
+.. |bool-type| image:: https://img.shields.io/badge/bool--x.svg?style=social
+.. |int-type| image:: https://img.shields.io/badge/int--x.svg?style=social
+.. |function-type| image:: https://img.shields.io/badge/function--x.svg?style=social
+.. |distribution-type| image:: https://img.shields.io/badge/distribution--x.svg?style=social
 
 
