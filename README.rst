@@ -90,7 +90,7 @@ This project is licensed under the [LICENSE NAME](LICENSE) license.
 Examples
 =============
 
-When all default values
+When all values are default
 -------
 
 .. code-block:: python
@@ -98,10 +98,10 @@ When all default values
     # Example usage of the function with all default values
     sequence = generate_corr_sequence(debug=True)
     
-.. image:: ./examples/defaultpdf
+.. image:: ./examples/defaultpdf.png
   :align: center
   
-.. image:: ./examples/defaultacf
+.. image:: ./examples/defaultacf.png
   :align: center
 
 
