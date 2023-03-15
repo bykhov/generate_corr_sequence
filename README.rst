@@ -58,16 +58,6 @@ Returns
 
 - ``return_type``: A random sequence with pre-defined ACF and PDF with type ``numpy.ndarray``.
 
-Version History
----------------
-
-- Version X.X.X: Description of changes made in this version.
-
-See Also
---------
-
-Other related functions, classes or modules that may be useful to reference.
-
 References
 ----------
 
@@ -77,7 +67,7 @@ Contributors
 ------------
 
 - `Dima Bykhovsky <https://github.com/bykhov>`_
-- Contributor Name (https://github.com/contributor_username)
+-  `Netanel Tochilovsky <https://github.com/Nati-Toch>`_
 - `Alexander Rudyak <https://github.com/AlexRudyak>`_
 
 License
