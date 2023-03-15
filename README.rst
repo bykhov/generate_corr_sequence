@@ -107,7 +107,6 @@ When all values are default
     ro_y = np.exp(-0.05 * np.abs(m)) * np.cos(0.25 * np.abs(m))
     sequence = generate_corr_sequence(rayleigh, ro_y=ro_y, L=2 ** 20, seed=100, debug=True)
 
-Probability Density Funciton before and after the ACF matching process
 .. image:: ./examples/exp-0.05mcos0.25mpdf.png
   :align: center
   
