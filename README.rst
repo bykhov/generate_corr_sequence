@@ -6,7 +6,7 @@
 .. image:: https://img.shields.io/badge/Creators-D.%20Bykhovsky%2C%20A.%20Rudyak%2C%20N.%20Tochilvosky-blue
   :align: center
   
-.. image:: https://img.shields.io/badge/Version-v1.0.0-green
+.. image:: https://img.shields.io/badge/Version-v0.0.1-green
   :align: center
 
 .. image:: https://img.shields.io/badge/License-MIT-lightgreen
