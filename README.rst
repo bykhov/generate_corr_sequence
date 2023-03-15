@@ -49,7 +49,7 @@ Arguments
 ---------
 
 - |distribution-type| ``dist_obj`` - A distribution object from scipy.stats, default is ``uniform``.
-- |function-type| ``ro_y`` - A desired ACF function with ``m`` as variable, default is ``linear function``.
+- |function-type| ``desiredACF`` - A desired ACF function with ``m`` as variable, default is ``linear function``.
 - |int-type| ``L`` - Number of desired samples, default is ``2^20``.
 - |int-type| ``seed`` - Number as input for the random number generator, default is ``100``.
 - |bool-type| ``debug`` - Plots intermidiate graphs, also helps with visualization, default is ``False``.
