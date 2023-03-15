@@ -48,11 +48,11 @@ How to use the function.
 Arguments
 ---------
 
-- |distribution-type| ``dist_obj`` - A distribution object from scipy.stats, default is ``uniform``.
-- |function-type| ``desiredACF`` - A desired ACF function with ``m`` as variable, default is ``linear function``.
-- |int-type| ``L`` - Number of desired samples, default is ``2^20``.
-- |int-type| ``seed`` - Number as input for the random number generator, default is ``100``.
-- |bool-type| ``debug`` - Plots intermidiate graphs, also helps with visualization, default is ``False``.
+``dist_obj`` - A distribution object from scipy.stats, default is ``uniform``.
+``desiredACF`` - A desired ACF function with ``m`` as variable, default is ``linear function``.
+``L`` - Number of desired samples, default is ``2^20``.
+``seed`` - Number as input for the random number generator, default is ``100``.
+``debug`` - Plots intermidiate graphs, also helps with visualization, default is ``False``.
 
 
 
@@ -118,9 +118,5 @@ AutoCorrelation Funciton before and after the ACF matching process
   :align: center
 
 
-.. |bool-type| image:: https://img.shields.io/badge/bool--x.svg?style=social
-.. |int-type| image:: https://img.shields.io/badge/int--x.svg?style=social
-.. |function-type| image:: https://img.shields.io/badge/function--x.svg?style=social
-.. |distribution-type| image:: https://img.shields.io/badge/distribution--x.svg?style=social
 
 
