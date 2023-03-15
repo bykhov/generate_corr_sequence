@@ -98,13 +98,21 @@ When all values are default
 
 .. code-block:: python
 
-    # Example usage of the function with all default values
-    sequence = generate_corr_sequence(debug=True)
-    
-.. image:: ./examples/defaultpdf.png
+    # Example usage of the function with Rayleigh distribution and an autocorrelation function
+    import scipy
+    import numpy as np
+    from scipy.stats import rayleigh
+
+    m = np.arange(0, 100)
+    ro_y = np.exp(-0.05 * np.abs(m)) * np.cos(0.25 * np.abs(m))
+    sequence = generate_corr_sequence(rayleigh, ro_y=ro_y, L=2 ** 20, seed=100, debug=True)
+
+Probability Density Funciton before and after the ACF matching process
+.. image:: ./examples/exp-0.05mcos0.25mpdf.png
   :align: center
   
-.. image:: ./examples/defaultacf.png
+AutoCorrelation Funciton before and after the ACF matching process
+.. image:: ./examples/exp-0.05mcos0.25macf.png
   :align: center
 
 
