@@ -49,10 +49,15 @@ Arguments
 ---------
 
 ``dist_obj`` - A distribution object from scipy.stats, default is ``uniform``.
+
 ``desiredACF`` - A desired ACF function with ``m`` as variable, default is ``linear function``.
+
 ``L`` - Number of desired samples, default is ``2^20``.
+
 ``seed`` - Number as input for the random number generator, default is ``100``.
+
 ``debug`` - Plots intermidiate graphs, also helps with visualization, default is ``False``.
+
 
 
 
@@ -61,7 +66,7 @@ Arguments
 Returns
 -------
 
-- ``return_type``: Description of the return value.
+- ``return_type``: A random sequence with pre-defined ACF and PDF with type ``numpy.ndarray``.
 
 Version History
 ---------------
