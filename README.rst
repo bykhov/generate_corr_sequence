@@ -35,16 +35,6 @@ Summary
    
 A python package for generating a random autocorrelated sequence with user preffered autocorrelation function and cumulative distribution function.
 
-Usage Examples
------
-
-How to use the function.
-
-.. code-block:: python
-
-    result = function_name(arg1, arg2)
-    print(result)
-
 Arguments
 ---------
 
