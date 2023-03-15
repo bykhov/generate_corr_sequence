@@ -105,7 +105,7 @@ Rayleigh distribution with exp*cos ACF
 
     m = np.arange(0, 100)
     desiredACF = np.exp(-0.05 * np.abs(m)) * np.cos(0.25 * np.abs(m))
-    sequence = generate_corr_sequence(rayleigh, ro_y=desiredACF, L=2 ** 20, seed=100, debug=True)
+    sequence = generate_corr_sequence(rayleigh, desiredACF=desiredACF, L=2 ** 20, seed=100, debug=True)
     
 Probability Density Funciton before and after the ACF matching process
 ----
