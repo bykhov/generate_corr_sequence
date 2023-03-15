@@ -33,7 +33,7 @@ For that purpose we made helper functions:
 Summary
 -------
    
-The function 
+A python package for generating a random autocorrelated sequence with user preffered autocorrelation function and cumulative distribution function.
 
 Usage
 -----
