@@ -93,7 +93,7 @@ This project is licensed under the `MIT <./LICENSE.md>`_ license.
 Examples
 =============
 
-When all values are default
+Rayleigh distribution with exp*cos ACF
 -------
 
 .. code-block:: python
