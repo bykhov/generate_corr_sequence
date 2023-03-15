@@ -17,19 +17,6 @@
 Generate_corr_sequence
 =============
 
-We've created a Python function capable of creating ``L`` sized vecor of samples, having a desired CDF function and ACC.
-
-To work with it, the user needs to have a desired function
-
-For that purpose we made helper functions:
-
-#. ``findCoeff`` - find the d coefficients of a given distribution
-#. ``integration_function`` - a function that integrated over the non-inversed CDF solution
-#. ``find_ro_x`` - add roh_x explained # maybe change the function name?
-#. ``findFilter`` - find the required filter for the desired ACF
-#. ``get_ranked_sequence`` - rank match the sequence to get the desired ACF
-#. ``drawDebugPlots`` - if something doesnt work this might give an insight with plots about whats going on
-
 Summary
 -------
    
@@ -47,11 +34,6 @@ Arguments
 ``seed`` - Number as input for the random number generator, default is ``100``.
 
 ``debug`` - Plots intermidiate graphs, also helps with visualization, default is ``False``.
-
-
-
-
-
 
 Returns
 -------
