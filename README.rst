@@ -48,6 +48,10 @@ Dijkstra, E. W. (1968).
 Go to statement considered harmful. 
 Communications of the ACM, 11(3), 147-148.
 
+[1] Filho, José Cândido Silveira Santos, and Michael Daoud Yacoub. “Coloring Non-Gaussian Sequences.” IEEE TRANSACTIONS ON SIGNAL PROCESSING, vol. 56, no. 12, 2008, p. 6. 
+
+https://ieeexplore.ieee.org/abstract/document/4633661
+
 Contributors
 ------------
 
