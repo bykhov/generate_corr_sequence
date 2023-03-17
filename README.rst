@@ -43,13 +43,11 @@ Returns
 References
 ----------
 
-<a id="1">[1]</a> 
-Dijkstra, E. W. (1968). 
-Go to statement considered harmful. 
-Communications of the ACM, 11(3), 147-148.
-
 [1] Filho, José Cândido Silveira Santos, and Michael Daoud Yacoub. “Coloring Non-Gaussian Sequences.” IEEE TRANSACTIONS ON SIGNAL PROCESSING, vol. 56, no. 12, 2008, p. 6. 
 https://ieeexplore.ieee.org/abstract/document/4633661
+
+[2] Liu, Bede, et al. “Generation of a Random Sequence Having a Jointly Specified Marginal Distribution and Autocovariance.” IEEE TRANSACTIONS ON ACOUSTICS, SPEECH, AND SIGNAL PROCESSING, vol. ASSP-30, no. 6, 1982, p. 11.
+https://ieeexplore.ieee.org/document/1163990
 
 Contributors
 ------------
