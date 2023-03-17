@@ -25,15 +25,15 @@ A python package for generating a random autocorrelated sequence with user preff
 Arguments
 ---------
 
-``dist_obj`` - A distribution object from scipy.stats, default is ``uniform``.
+- ``dist_obj`` - A distribution object from `scipy.stats <https://docs.scipy.org/doc/scipy/reference/stats.html>`_, default is ``uniform``.
 
-``desiredACF`` - A desired ACF function with ``m`` as variable, default is ``linear function``.
+- ``desiredACF`` - A desired ACF function with ``m`` as a variable, default is a ``linear function``.
 
-``L`` - Number of desired samples, default is ``2^20``.
+- ``L`` - Number of desired samples, default is ``2^20``.
 
-``seed`` - Number as input for the random number generator, default is ``100``.
+- ``seed`` - Number as input for the random number generator, default is ``100``.
 
-``debug`` - Plots intermidiate graphs, also helps with visualization, default is ``False``.
+- ``debug`` - Plots intermidiate graphs, also helps with visualization, default is ``False``.
 
 Returns
 -------
@@ -72,7 +72,7 @@ Rayleigh distribution with exp*cos ACF
 
     m = np.arange(0, 100)
     desiredACF = np.exp(-0.05 * np.abs(m)) * np.cos(0.25 * np.abs(m))
-    sequence = generate_corr_sequence(rayleigh, desiredACF=desiredACF, L=2 ** 20, seed=100, debug=True)
+    sequence = generate_corr_sequence(rayleigh, desiredACF=desiredACF, L=2**20, seed=100, debug=True)
     
 Probability Density Funciton before and after the ACF matching process
 ----
