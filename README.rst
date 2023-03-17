@@ -33,7 +33,7 @@ Arguments
 
 - ``seed`` - Number as input for the random number generator, default is ``100``.
 
-- ``debug`` - Plots intermidiate graphs, also helps with visualization, default is ``False``.
+- ``debug`` - Plots intermidiate graphs, also helps with visualization, default is ``False``.[[1]](#1)
 
 Returns
 -------
@@ -43,7 +43,10 @@ Returns
 References
 ----------
 
-Any references or resources used to develop the function or related to the function.
+<a id="1">[1]</a> 
+Dijkstra, E. W. (1968). 
+Go to statement considered harmful. 
+Communications of the ACM, 11(3), 147-148.
 
 Contributors
 ------------
