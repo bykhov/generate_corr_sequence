@@ -33,7 +33,7 @@ Arguments
 
 - ``seed`` - Number as input for the random number generator, default is ``100``.
 
-- ``debug`` - Plots intermidiate graphs, also helps with visualization, default is ``False``.[[1]](#1)
+- ``debug`` - Plots intermidiate graphs, also helps with visualization, default is ``False``.
 
 Returns
 -------
