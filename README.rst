@@ -63,6 +63,25 @@ This project is licensed under the `MIT <./LICENSE.md>`_ license.
 Examples
 =============
 
+Default settings, uniform distribution and linear ACF
+------
+
+.. code-block:: python
+
+    # Example usage of the function with default settings
+    sequence = generate_corr_sequence(debug=True)
+    
+Probability Density Funciton before and after the ACF matching process
+----
+.. image:: ./examples/defaultPDF.png
+  :align: center
+  
+AutoCorrelation Funciton before and after the ACF matching process
+----
+.. image:: ./examples/defaultACF.png
+  :align: center
+  
+
 Rayleigh distribution with exp*cos ACF
 -------
 
