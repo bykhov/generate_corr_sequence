@@ -22,7 +22,7 @@ Generate_corr_sequence
 Summary
 -------
    
-A python package for generating a random autocorrelated sequence with user preffered autocorrelation function and cumulative distribution function.
+This Python function creates a sequence of samples with a specific autocorrelation function and distribution. The input parameters include the desired distribution, target autocorrelation function as a vector, length of the output sequence, seed for the random number generator, and a boolean for debugging. The output is an array of samples with the desired autocorrelation and probability density function.
 
 Arguments
 ---------

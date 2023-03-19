@@ -65,8 +65,9 @@ def integration_function(y, numberOfHermitePoly, dist_obj):
     h = lambda x: np.sqrt(2) * erfinv(2 * x - 1)
     hdot = lambda x, y: np.sqrt(2 * np.pi) * x * np.exp(erfinv(2 * y - 1) ** 2)
     hermiteProb = lambda n, x: eval_hermitenorm(n, x)  # hermite polynom
-    return y * hermiteProb(numberOfHermitePoly, h(Fy(y))) * fx(h(Fy(y))) * hdot(fy(y),
-                                                                                Fy(y))  # The integration function
+    return y * hermiteProb(numberOfHermitePoly,
+                           h(Fy(y))) * fx(h(Fy(y))) * hdot(fy(y),
+                            Fy(y))  # The integration function
 
 
 def find_ro_x(d, desiredACF):
@@ -96,16 +97,15 @@ def find_ro_x(d, desiredACF):
 
 def findFilter(ro_x):
     """
-      This function will find the appropriate filter to adjust the
-      target ACF to a Gaussian sequence.
+    This function finds the appropriate AR filter to adjust the target ACF to a Gaussian sequence.
 
-      Input:
-      ro_x - Approximation of the target ACF with the usage of the d coefficients.
+    Parameters:
+        ro_x (ndarray): Approximation of the target ACF
 
-      Output:
-      a    - The filter to adjust the target ACF to a Gaussian sequence,
-             np.shape = (length(ro_x)+1, ).
+    Returns:
+        ndarray: The filter to adjust the target ACF of a Gaussian sequence.
     """
+
     H = np.array(ro_x)
     ry = -H[1:]
     ry = np.append(ry, 0)
@@ -116,14 +116,15 @@ def findFilter(ro_x):
 
 def get_ranked_sequence(x, z):
     """
-      This function will apply the rank matching operation.
+    Applies the rank matching operation to transform a sequence with a Gaussian autocorrelation function to a target distribution
+    sequence with the desired autocorrelation function.
 
-      Input:
-      x - Gaussian sequence with the desired ACF.
-      z - Target distribution sequence without the desired ACF.
+    Args:
+    - x: NumPy array representing a Gaussian sequence with the desired autocorrelation function.
+    - z: NumPy array representing a target distribution sequence without the desired autocorrelation function.
 
-      Output:
-      y - Target distribution sequence with the desired ACF, np.shape = (length(x), ).
+    Returns:
+    - y: NumPy array of shape (len(x),) representing the target distribution sequence with the desired autocorrelation function.
     """
     I = np.argsort(x)
     y = np.sort(z)
@@ -201,30 +202,33 @@ def drawDebugPlots(Xn, x, z, y, desiredACF):
 
 def generate_corr_sequence(dist_obj=uniform,
                            desiredACF=1 - np.minimum(np.arange(0, 100), 100) / 100,
-                           L=2 ** 20, seed=100,
+                           L=2 ** 20,
+                           seed=42,
                            debug=False):
     """
-    This Function will create a vector (sequence) of samples with the desired
-    AutoCorrelation Function and distribution.
+    Generate a sequence of samples with a specified autocorrelation function and probability distribution.
 
-    Input:
-    dist_obj   - The deisred distibution, default is uniform.
-    desiredACF - Vector of the target ACF function.
-    L          - Number of samples in the output sequence, default is 2^20.
-    seed       - Seed for the random number generator.
-    debug      - Whether to print debugging graphs or not, default is False.
+    Args:
+    - dist_obj: scipy object that represents the desired probability distribution. Default is uniform.
+    - desiredACF: vector of values representing the target autocorrelation function. Default is None, which implies
+                  a white noise process with no correlation.
+    - L: the desired length of the output sequence. Default is 2**20.
+    - seed: seed for the random number generator.
+    - debug: boolean flag indicating whether to produce debugging plots or not. Default is False.
 
-    Output:
-    y          - An np.ndarray of samples with desired ACF and PDF, np.shape = (L, ).
+    Returns:
+    - y: a NumPy array of shape (L,) containing the generated sequence of samples with the desired autocorrelation
+         function and probability distribution.
     """
 
+    # initialize the random number generator
     np.random.seed(seed)
+
+    Xn = np.random.randn(1, L)  # normal sequence
 
     d = findCoeff(dist_obj)
 
     ro_x = find_ro_x(d, desiredACF)
-
-    Xn = np.random.randn(1, L)  # normal sequence
 
     a = findFilter(ro_x)  # finding the appropriate filter to get the target ACF
 
@@ -238,3 +242,7 @@ def generate_corr_sequence(dist_obj=uniform,
         drawDebugPlots(Xn, x, z, y, desiredACF)
 
     return y
+
+
+if __name__ == "__main__":
+    signal = generate_corr_sequence(debug=True)
