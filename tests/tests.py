@@ -1,14 +1,18 @@
-import scipy
 import numpy as np
-from scipy.stats import rayleigh, triang, laplace, uniform, expon
-from scipy.special import j0
-from scipy import signal
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
-from generate_corr_sequence import findCoeff, find_ro_x, findFilter, get_ranked_sequence
-
+import scipy
+from scipy import signal
 from scipy.stats import rayleigh, triang, laplace, uniform, expon
 from scipy.special import j0
+
+from pathlib import Path
+import sys
+path_root = Path(__file__).parents[2]
+sys.path.append(str(path_root))
+
+import generate_corr_sequence
+from generate_corr_sequence import findCoeff, find_ro_x, findFilter, get_ranked_sequence
 
 
 def test_d():

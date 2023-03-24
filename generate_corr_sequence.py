@@ -200,7 +200,7 @@ def drawDebugPlots(Xn, x, z, y, desiredACF):
     plt.show()
 
 
-def generate_corr_sequence(dist_obj=uniform,
+def gen_corr_sequence(dist_obj=uniform,
                            desiredACF=1 - np.minimum(np.arange(0, 100), 100) / 100,
                            L=2 ** 20,
                            seed=42,
@@ -245,4 +245,4 @@ def generate_corr_sequence(dist_obj=uniform,
 
 
 if __name__ == "__main__":
-    signal = generate_corr_sequence(debug=True)
+    signal = gen_corr_sequence(debug=True)
