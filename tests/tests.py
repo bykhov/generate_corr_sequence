@@ -1,7 +1,6 @@
 import numpy as np
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
-import scipy
 from scipy import signal
 from scipy.stats import rayleigh, triang, laplace, uniform, expon
 from scipy.special import j0
@@ -11,14 +10,13 @@ import sys
 path_root = Path(__file__).parents[2]
 sys.path.append(str(path_root))
 
-import generate_corr_sequence
-from generate_corr_sequence import findCoeff, find_ro_x, findFilter, get_ranked_sequence
+import generate_corr_sequence.generate_corr_sequence as gcs
 
 
 def test_d():
     rtol = 1e-4  # relative tolerance
 
-    dRayleighCode = np.round(findCoeff(dist_obj=rayleigh)[:7], 7)
+    dRayleighCode = np.round(gcs.findCoeff(dist_obj=rayleigh)[:7], 7)
     dRayleighArticle = np.array([0.9724690, 0.0264400, 0.0010467, 0.0000113, 0.0000310, 0.0000017, 0.0000007])
     try:
         np.testing.assert_allclose(dRayleighArticle, dRayleighCode, rtol=rtol, atol=0)
@@ -28,7 +26,7 @@ def test_d():
         print(f"\tTarget coeffs:\n{dRayleighArticle}")
         print(f"\tCalculated coeffs:\n{dRayleighCode}")
 
-    dLaplaceCode = np.round(findCoeff(dist_obj=laplace)[:7], 7)
+    dLaplaceCode = np.round(gcs.findCoeff(dist_obj=laplace)[:7], 7)
     dLaplaceArticle = np.array([0.9632098, 0, 0.0352063, 0, 0.0013255, 0, 0.0002592])
     try:
         np.testing.assert_allclose(dLaplaceArticle, dLaplaceCode, rtol=rtol, atol=0)
@@ -38,7 +36,7 @@ def test_d():
         print(f"Target coeffs:\n{dLaplaceArticle}")
         print(f"Calculated coeffs:\n{dLaplaceCode}")
 
-    dUniformCode = np.round(findCoeff(dist_obj=uniform)[:7], 7)
+    dUniformCode = np.round(gcs.findCoeff(dist_obj=uniform)[:7], 7)
     dUniformArticle = np.array([0.9550627, 0, 0.0397943, 0, 0.0044768, 0, 0.0006662])
     try:
         np.testing.assert_allclose(dUniformArticle, dUniformCode, rtol=rtol, atol=0)
@@ -48,7 +46,7 @@ def test_d():
         print(f"Target coeffs:\n{dUniformArticle}")
         print(f"Calculated coeffs:\n{dUniformCode}")
 
-    dExponCode = np.round(findCoeff(dist_obj=expon)[:7], 7)
+    dExponCode = np.round(gcs.findCoeff(dist_obj=expon)[:7], 7)
     dExponArticle = np.array([0.8157660, 0.1773910, 0.0066847, 0.0001343, 0.0000169, 0.0000073, 0.0])
     try:
         np.testing.assert_allclose(dExponArticle, dExponCode, rtol=rtol, atol=0,
@@ -59,7 +57,7 @@ def test_d():
         print(f"Target coeffs:\n{dExponArticle}")
         print(f"Calculated coeffs:\n{dExponCode}")
 
-    dTriangleCode = np.round(findCoeff(dist_obj=triang(c=0.5, loc=-np.sqrt(6), scale=2 * np.sqrt(6)))[:7], 7)
+    dTriangleCode = np.round(gcs.findCoeff(dist_obj=triang(c=0.5, loc=-np.sqrt(6), scale=2 * np.sqrt(6)))[:7], 7)
     dTriangleArticle = np.array([0.9927701, 0.0, 0.0071243, 0.0, 0.0000010, 0.0, 0.0000100])
     try:
         np.testing.assert_allclose(dTriangleArticle, dTriangleCode, rtol=rtol, atol=0,
@@ -74,11 +72,11 @@ def test_d():
 def test_ACF(dist_obj=rayleigh):
     rtol = 0.1  # relative tolerance
 
-    d = list(np.round(findCoeff(dist_obj=dist_obj), 7))
+    d = list(np.round(gcs.findCoeff(dist_obj=dist_obj), 7))
     m = np.arange(0, 100)
 
     LinearTargetACF = 1 - np.minimum(m, 100) / 100
-    LinearCalcACF = np.array(find_ro_x(d, LinearTargetACF))
+    LinearCalcACF = np.array(gcs.find_ro_x(d, LinearTargetACF))
     try:
         np.testing.assert_allclose(LinearTargetACF, LinearCalcACF, rtol=rtol, atol=0)
         print("Linear target and calculated ACFs match successfuly")
@@ -93,7 +91,7 @@ def test_ACF(dist_obj=rayleigh):
         plt.show()
 
     ExponTargetACF = np.exp(-0.05 * np.abs(m))
-    ExponCalcACF = np.array(find_ro_x(d, ExponTargetACF))
+    ExponCalcACF = np.array(gcs.find_ro_x(d, ExponTargetACF))
     try:
         np.testing.assert_allclose(ExponTargetACF, ExponCalcACF, rtol=rtol, atol=0)
         print("exponential target and calculated ACFs match successfuly")
@@ -108,7 +106,7 @@ def test_ACF(dist_obj=rayleigh):
         plt.show()
 
     ExponCosTargetACF = np.exp(-0.05 * np.abs(m)) * np.cos(0.25 * np.abs(m))
-    ExponCosCalcACF = np.array(find_ro_x(d, ExponCosTargetACF))
+    ExponCosCalcACF = np.array(gcs.find_ro_x(d, ExponCosTargetACF))
     try:
         np.testing.assert_allclose(ExponCosTargetACF, ExponCosCalcACF, rtol=rtol, atol=0)
         print("exponent*cos target and calculated ACFs match successfuly")
@@ -123,7 +121,7 @@ def test_ACF(dist_obj=rayleigh):
         plt.show()
 
     BesselTargetACF = np.array(j0(0.1 * np.pi * abs(m)))
-    BesselCalcACF = np.array(find_ro_x(d, BesselTargetACF))
+    BesselCalcACF = np.array(gcs.find_ro_x(d, BesselTargetACF))
     try:
         np.testing.assert_allclose(BesselTargetACF, BesselCalcACF, rtol=rtol, atol=0)
         print("Bessel target and calculated ACFs match successfuly")
@@ -141,7 +139,7 @@ def test_ACF(dist_obj=rayleigh):
 def DrawTestPlots(dist_obj=rayleigh, dist_name='rayleigh'):
     L = 2 ** 20
     m = np.arange(0, 100)
-    d = findCoeff(dist_obj)
+    d = gcs.findCoeff(dist_obj)
     Xn = np.random.randn(1, L)  # normal sequence
     z = dist_obj.rvs(size=L)  # Desired distribution sequence
     names = ['linear', 'exp', 'exp*cos', 'bessel']
@@ -149,10 +147,10 @@ def DrawTestPlots(dist_obj=rayleigh, dist_name='rayleigh'):
                   np.exp(-0.05 * np.abs(m)) * np.cos(0.25 * np.abs(m)), np.array(j0(0.1 * np.pi * abs(m)))]
 
     for i, desiredACF in enumerate(targetACFs):
-        ro_x = find_ro_x(d, desiredACF)  # find appropriate ro_x
-        a = findFilter(ro_x)  # finding the appropriate filter to get the target ACF
+        ro_x = gcs.find_ro_x(d, desiredACF)  # find appropriate ro_x
+        a = gcs.findFilter(ro_x)  # finding the appropriate filter to get the target ACF
         x = signal.lfilter([1.0], a, Xn).reshape(-1)  # adjust the ACF to the Gaussian sequence
-        y = get_ranked_sequence(x, z)  # rank matching the sequence
+        y = gcs.get_ranked_sequence(x, z)  # rank matching the sequence
         yCorr = sm.tsa.acf(y, nlags=len(desiredACF) - 1, fft=True)  # the achieved ACF of target distribution
         plt.plot(m, yCorr, 'o', mfc='none', markersize=5, label=f'achieved {names[i]} ACF')
 
