@@ -4,12 +4,6 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.stats import rayleigh, triang, laplace, uniform, expon
 from scipy.special import j0
-
-from pathlib import Path
-import sys
-path_root = Path(__file__).parents[2]
-sys.path.append(str(path_root))
-
 import generate_corr_sequence.generate_corr_sequence as gcs
 
 
