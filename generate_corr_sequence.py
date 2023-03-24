@@ -21,7 +21,7 @@ def findCoeff(dist_obj=uniform):
                representing the chosen distribution.
     """
     firstDegreeOfHermitePoly = 1
-    threshold_for_small_d_coeff = 10 ** -5
+    threshold_for_small_d_coeff = 10 ** -6
     max_amount_of_poly = 8
     amount_of_consecutive_zeroes = 2
 
