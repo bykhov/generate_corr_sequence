@@ -12,6 +12,7 @@ sys.path.append(str(path_root))
 
 import generate_corr_sequence.generate_corr_sequence as gcs
 
+#change to pytest in the future?
 
 def test_d():
     rtol = 1e-4  # relative tolerance
