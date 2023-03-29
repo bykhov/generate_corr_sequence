@@ -1,12 +1,16 @@
 import numpy as np
-import scipy
+from numpy import ndarray
 import statsmodels.api as sm
-import matplotlib.pyplot as plt
-from scipy import signal
-from scipy.stats import norm, uniform
+from statsmodels.tsa.arima_process import arma_acf
+from statsmodels.graphics.tsaplots import plot_acf
+import scipy
+from scipy.signal import lfilter
+from scipy.stats import norm, uniform, triang
 from scipy.special import erfinv, eval_hermitenorm
 from scipy.integrate import quad
 import scipy.io
+from scipy.optimize import minimize
+import matplotlib.pyplot as plt
 
 
 def findCoeff(dist_obj=uniform):
@@ -65,9 +69,8 @@ def integration_function(y, numberOfHermitePoly, dist_obj):
     h = lambda x: np.sqrt(2) * erfinv(2 * x - 1)
     hdot = lambda x, y: np.sqrt(2 * np.pi) * x * np.exp(erfinv(2 * y - 1) ** 2)
     hermiteProb = lambda n, x: eval_hermitenorm(n, x)  # hermite polynom
-    return y * hermiteProb(numberOfHermitePoly,
-                           h(Fy(y))) * fx(h(Fy(y))) * hdot(fy(y),
-                            Fy(y))  # The integration function
+    return y * hermiteProb(numberOfHermitePoly, h(Fy(y))) * fx(h(Fy(y))) * hdot(fy(y),
+                                                                                Fy(y))  # The integration function
 
 
 def find_ro_x(d, desiredACF):
@@ -95,36 +98,75 @@ def find_ro_x(d, desiredACF):
     return ro_x
 
 
-def findFilter(ro_x):
+# %% MSE cost function for ARMA optimization
+def mse(result: np.ndarray, target: np.ndarray) -> np.ndarray:
+    """Mean Squared Error"""
+    score = np.mean(np.square(np.clip(result, -1e5, 1e5) - target))
+    return score
+
+
+assert mse(np.array([0, 0]), np.array([3, 4])) == 12.5
+assert mse(np.array([0, 1e6]), np.array([0, 0])) == 1e10 / 2.0
+
+
+# %% ar, ma <-> vector
+def ar_ma_to_vector(ar: np.ndarray, ma: np.ndarray) -> np.ndarray:
+    """Convert ARMA to vector"""
+    return np.concatenate((ar[1:], ma[1:]))
+
+
+def vector_to_ar_ma(x: np.ndarray) -> (np.ndarray, np.ndarray):
+    """Convert vector to ARMA"""
+    ar = np.zeros(4)
+    ar[0] = 1
+    ar[1:] = x[:3]
+    ma = np.zeros(4)
+    ma[0] = 1
+    ma[1:] = x[3:]
+    return ar, ma
+
+
+# %% theoretical ACF
+def my_arma_acf(x, lags: int) -> np.ndarray:
+    """ARMA(3,3) model
+    output: theoretical ACF
     """
-    This function finds the appropriate AR filter to adjust the target ACF to a Gaussian sequence.
+    ar, ma = vector_to_ar_ma(x)
+    return arma_acf(ar, ma, lags)
 
-    Parameters:
-        ro_x (ndarray): Approximation of the target ACF
 
-    Returns:
-        ndarray: The filter to adjust the target ACF of a Gaussian sequence.
+# %% Optimization cost function
+def cost_function(x, lags, target_acf):
+    """Cost function for ARMA optimization
+    input: x - vector of ARMA coefficients
     """
+    try:
+        R = my_arma_acf(x, lags)  # theoretical ACF
+    except:
+        return 1e10
+    return mse(R, target_acf)
 
-    H = np.array(ro_x)
-    ry = -H[1:]
-    ry = np.append(ry, 0)
-    a = scipy.linalg.solve_toeplitz(H, ry)
-    a = np.append(1, a.T)
-    return a
+
+# %% ARMA model
+def get_arma_filter(target_acf):
+    lags = len(target_acf)
+    x0 = np.array([-0.5, 0.5, -0.5, 0.5, -0.5, 0.5])
+    res = minimize(cost_function, x0, args=(lags, target_acf), method='nelder-mead',
+                   options={'xatol': 1e-5, 'disp': True})
+    ar, ma = vector_to_ar_ma(res.x)
+    return ar, ma
 
 
 def get_ranked_sequence(x, z):
     """
-    Applies the rank matching operation to transform a sequence with a Gaussian autocorrelation function to a target distribution
-    sequence with the desired autocorrelation function.
+      This function will apply the rank matching operation.
 
-    Args:
-    - x: NumPy array representing a Gaussian sequence with the desired autocorrelation function.
-    - z: NumPy array representing a target distribution sequence without the desired autocorrelation function.
+      Input:
+      x - Gaussian sequence with the desired ACF.
+      z - Target distribution sequence without the desired ACF.
 
-    Returns:
-    - y: NumPy array of shape (len(x),) representing the target distribution sequence with the desired autocorrelation function.
+      Output:
+      y - Target distribution sequence with the desired ACF, np.shape = (length(x), ).
     """
     I = np.argsort(x)
     y = np.sort(z)
@@ -200,39 +242,37 @@ def drawDebugPlots(Xn, x, z, y, desiredACF):
     plt.show()
 
 
-def gen_corr_sequence(dist_obj=uniform,
+def generate_corr_sequence(dist_obj=uniform,
                            desiredACF=1 - np.minimum(np.arange(0, 100), 100) / 100,
-                           L=2 ** 20,
-                           seed=42,
+                           L=2 ** 20, seed=100,
                            debug=False):
     """
-    Generate a sequence of samples with a specified autocorrelation function and probability distribution.
+    This Function will create a vector (sequence) of samples with the desired
+    AutoCorrelation Function and distribution.
 
-    Args:
-    - dist_obj: scipy object that represents the desired probability distribution. Default is uniform.
-    - desiredACF: vector of values representing the target autocorrelation function. Default is None, which implies
-                  a white noise process with no correlation.
-    - L: the desired length of the output sequence. Default is 2**20.
-    - seed: seed for the random number generator.
-    - debug: boolean flag indicating whether to produce debugging plots or not. Default is False.
+    Input:
+    dist_obj   - The deisred distibution, default is uniform.
+    desiredACF - Vector of the target ACF function.
+    L          - Number of samples in the output sequence, default is 2^20.
+    seed       - Seed for the random number generator.
+    debug      - Whether to print debugging graphs or not, default is False.
 
-    Returns:
-    - y: a NumPy array of shape (L,) containing the generated sequence of samples with the desired autocorrelation
-         function and probability distribution.
+    Output:
+    y          - An np.ndarray of samples with desired ACF and PDF, np.shape = (L, ).
     """
 
-    # initialize the random number generator
     np.random.seed(seed)
-
-    Xn = np.random.randn(1, L)  # normal sequence
 
     d = findCoeff(dist_obj)
 
     ro_x = find_ro_x(d, desiredACF)
 
-    a = findFilter(ro_x)  # finding the appropriate filter to get the target ACF
+    # Xn = np.random.normal(size=L)  # normal sequence
+    Xn = np.random.randn(1, L)  # normal sequence
 
-    x = signal.lfilter([1.0], a, Xn).reshape(-1)
+    ar, ma = get_arma_filter(ro_x)  # finding the appropriate filter to get the target ACF
+
+    x = lfilter(ma, ar, Xn).reshape(-1)
 
     z = dist_obj.rvs(size=L)  # Desired distribution sequence
 
@@ -245,4 +285,4 @@ def gen_corr_sequence(dist_obj=uniform,
 
 
 if __name__ == "__main__":
-    signal = gen_corr_sequence(debug=True)
+    signal = generate_corr_sequence(debug=True)
