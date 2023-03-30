@@ -5,7 +5,8 @@ import scipy
 from scipy.signal import lfilter
 from scipy.stats import rayleigh, triang, laplace, uniform, expon
 from scipy.special import j0
-import generate_corr_sequence as gcs
+import sys
+sys.path.append("..")
 from generate_corr_sequence import findCoeff, find_ro_x, get_arma_filter, get_ranked_sequence
 
 #change to pytest in the future?
