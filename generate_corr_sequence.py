@@ -148,11 +148,11 @@ def cost_function(x, lags, target_acf):
 
 
 # %% ARMA model
-def get_arma_filter(target_acf):
+def get_arma_filter(target_acf, debug=False):
     lags = len(target_acf)
     x0 = np.array([-0.5, 0.5, -0.5, 0.5, -0.5, 0.5])
     res = minimize(cost_function, x0, args=(lags, target_acf), method='nelder-mead',
-                   options={'xatol': 1e-5, 'disp': True})
+                   options={'xatol': 1e-5, 'disp': debug})
     ar, ma = vector_to_ar_ma(res.x)
     return ar, ma
 
@@ -243,9 +243,9 @@ def drawDebugPlots(Xn, x, z, y, desiredACF):
 
 
 def gen_corr_sequence(dist_obj=uniform,
-                           desiredACF=1 - np.minimum(np.arange(0, 100), 100) / 100,
-                           L=2 ** 20, seed=100,
-                           debug=False):
+                      desiredACF=1 - np.minimum(np.arange(0, 100), 100) / 100,
+                      L=2 ** 20, seed=100,
+                      debug=False):
     """
     This Function will create a vector (sequence) of samples with the desired
     AutoCorrelation Function and distribution.
@@ -270,7 +270,7 @@ def gen_corr_sequence(dist_obj=uniform,
     # Xn = np.random.normal(size=L)  # normal sequence
     Xn = np.random.randn(1, L)  # normal sequence
 
-    ar, ma = get_arma_filter(ro_x)  # finding the appropriate filter to get the target ACF
+    ar, ma = get_arma_filter(ro_x, debug)  # finding the appropriate filter to get the target ACF
 
     x = lfilter(ma, ar, Xn).reshape(-1)
 
@@ -286,3 +286,5 @@ def gen_corr_sequence(dist_obj=uniform,
 
 if __name__ == "__main__":
     signal = gen_corr_sequence(debug=True)
+
+#%%
