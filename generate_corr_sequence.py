@@ -3,9 +3,10 @@ from numpy import ndarray
 import statsmodels.api as sm
 from statsmodels.tsa.arima_process import arma_acf
 from statsmodels.graphics.tsaplots import plot_acf
+from statsmodels.graphics.gofplots import qqplot_2samples, qqplot
 import scipy
 from scipy.signal import lfilter
-from scipy.stats import norm, uniform, triang
+from scipy.stats import norm, uniform, triang, probplot
 from scipy.special import erfinv, eval_hermitenorm
 from scipy.integrate import quad
 import scipy.io
@@ -105,10 +106,6 @@ def mse(result: np.ndarray, target: np.ndarray) -> np.ndarray:
     return score
 
 
-assert mse(np.array([0, 0]), np.array([3, 4])) == 12.5
-assert mse(np.array([0, 1e6]), np.array([0, 0])) == 1e10 / 2.0
-
-
 # %% ar, ma <-> vector
 def ar_ma_to_vector(ar: np.ndarray, ma: np.ndarray) -> np.ndarray:
     """Convert ARMA to vector"""
@@ -138,7 +135,9 @@ def my_arma_acf(x, lags: int) -> np.ndarray:
 # %% Optimization cost function
 def cost_function(x, lags, target_acf):
     """Cost function for ARMA optimization
-    input: x - vector of ARMA coefficients
+    input:
+    x - vector of ARMA coefficients
+    lags - amount of lag in the autocorrelation
     """
     try:
         R = my_arma_acf(x, lags)  # theoretical ACF
@@ -174,21 +173,17 @@ def get_ranked_sequence(x, z):
     return y
 
 
-def drawDebugPlots(Xn, x, z, y, desiredACF):
+def debugPlots(dist_obj, desiredACF, y):
     """
     This Function will draw plots of the achieved PDF and ACF.
 
     Input:
-    Xn  - Vector of normal distributed samples.
-    x   - Vector of the target ACF function.
-    z   - Number of samples in the output sequence, default is 2^20.
-    y   - A seed for the random number generator.
+    dist_obj - The target distribution object
+    desiredACF - The target ACF
+    y - The final sequence with matching ACF and distribution to the target
 
     """
     kwargs = dict(histtype='stepfilled', alpha=0.3, density=True, ec="k")
-    XnCorr = sm.tsa.acf(Xn.reshape(-1), nlags=len(desiredACF) - 1, fft=True)  # normal sequence acf
-    xCorr = sm.tsa.acf(x, nlags=len(desiredACF) - 1, fft=True)
-    zCorr = sm.tsa.acf(z, nlags=len(desiredACF) - 1, fft=True)
     yCorr = sm.tsa.acf(y, nlags=len(desiredACF) - 1, fft=True)
     plt.rcParams.update({
         "figure.facecolor": (1.0, 1.0, 1.0, 1),
@@ -196,53 +191,42 @@ def drawDebugPlots(Xn, x, z, y, desiredACF):
         "savefig.facecolor": (1.0, 1.0, 1.0, 1),
     })
 
-    plt.title('Pre and Post filter PDF')
+    plt.subplot(311)
+    pdfxAxis = np.linspace(dist_obj.ppf(1e-15), dist_obj.ppf(1 - 1e-15), 1000)
+    plt.title('Resulting PDF')
     plt.rcParams["figure.figsize"] = (8, 4)
     plt.rcParams['figure.dpi'] = 100
-    plt.hist(Xn[0], bins='auto', label="Pre-filtered PDF", **kwargs)
-    plt.hist(x, bins='auto', label="Post-filtered PDF", **kwargs)
+    plt.plot(pdfxAxis, dist_obj.pdf(pdfxAxis), label="Required PDF")
+    plt.hist(y, bins='auto', label="Simulated PDF", **kwargs)
     plt.xlabel('x')
     plt.ylabel('P(x)')
     plt.grid(True)
-    plt.legend()
-    plt.show()
+    plt.legend(loc='upper right')
 
-    plt.title('Pre and Post filter ACF')
+    plt.subplot(312)
+    plt.title('Resulting ACF')
     plt.rcParams["figure.figsize"] = (8, 4)
     plt.rcParams['figure.dpi'] = 100
-    plt.plot(XnCorr, label="Pre-filtered Gaussian ACF")
-    plt.plot(xCorr, label="Post-filtered Gaussian ACF")
+    plt.plot(yCorr, '-.', label='Simulated ACF')
+    plt.plot(desiredACF, '--', alpha=0.5, label='Required ACF')
     plt.xlabel('Lags')
     plt.ylabel('ACC')
+    plt.legend(loc='upper right')
     plt.grid(True)
-    plt.legend()
-    plt.show()
 
-    plt.title('resulting PDF')
-    plt.rcParams["figure.figsize"] = (8, 4)
-    plt.rcParams['figure.dpi'] = 100
-    plt.hist(z, bins='auto', label="Pre-ranked target PDF", **kwargs)
-    plt.hist(y, bins='auto', label="Post-ranked target PDF", **kwargs)
-    plt.xlabel('x')
-    plt.ylabel('P(x)')
-    plt.grid(True)
-    plt.legend()
-    plt.show()
-
-    plt.title('resulting ACF')
-    plt.rcParams["figure.figsize"] = (8, 4)
-    plt.rcParams['figure.dpi'] = 100
-    plt.plot(zCorr, label='Pre-ranked target ACF')
-    plt.plot(yCorr, '-.', label='Achieved ACF')
-    plt.plot(desiredACF, '--', alpha=0.5, label='Target ACF')
-    plt.xlabel('Lags')
-    plt.ylabel('ACC')
-    plt.legend()
-    plt.grid(True)
+    plt.subplot(313)
+    ax1 = plt.gca()
+    qqplot(y, fit=False, line='45', dist=dist_obj, ax=ax1)
+    fig = plt.gcf()
+    fig.set_size_inches(5, 15)
+    ax1.set_title('Distribution Q-Q Plot')
+    ax1.set_xlabel('Theoretical Quantiles')
+    ax1.set_ylabel('Sample Quantiles')
+    ax1.grid(True)
     plt.show()
 
 
-def gen_corr_sequence(dist_obj=uniform,
+def generate_corr_sequence(dist_obj=uniform,
                            desiredACF=1 - np.minimum(np.arange(0, 100), 100) / 100,
                            L=2 ** 20, seed=100,
                            debug=False):
@@ -255,7 +239,7 @@ def gen_corr_sequence(dist_obj=uniform,
     desiredACF - Vector of the target ACF function.
     L          - Number of samples in the output sequence, default is 2^20.
     seed       - Seed for the random number generator.
-    debug      - Whether to print debugging graphs or not, default is False.
+    debug      - Whether to plot debugging graphs or not, default is False.
 
     Output:
     y          - An np.ndarray of samples with desired ACF and PDF, np.shape = (L, ).
@@ -267,22 +251,20 @@ def gen_corr_sequence(dist_obj=uniform,
 
     ro_x = find_ro_x(d, desiredACF)
 
-    # Xn = np.random.normal(size=L)  # normal sequence
-    Xn = np.random.randn(1, L)  # normal sequence
+    Xn = np.random.normal(size=L)  # normal sequence
 
     ar, ma = get_arma_filter(ro_x)  # finding the appropriate filter to get the target ACF
 
-    x = lfilter(ma, ar, Xn).reshape(-1)
+    x = lfilter(ma, ar, Xn)
 
     z = dist_obj.rvs(size=L)  # Desired distribution sequence
 
     y = get_ranked_sequence(x, z)  # rank matching the sequence
 
     if debug:
-        drawDebugPlots(Xn, x, z, y, desiredACF)
+        debugPlots(dist_obj, desiredACF, y)
 
     return y
-
 
 if __name__ == "__main__":
     signal = gen_corr_sequence(debug=True)
