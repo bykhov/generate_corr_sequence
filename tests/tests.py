@@ -133,28 +133,27 @@ def test_ACF(dist_obj=rayleigh):
         plt.show()
 
 
-def DrawTestPlots(dist_obj=rayleigh, dist_name='rayleigh'):
-    L = 2 ** 24
-    m = np.arange(0, 100)
+def DrawTestPlots(dist_obj = rayleigh, dist_name = 'rayleigh'):
+    L = 2**24
+    m = np.arange(0,100)
     d = findCoeff(dist_obj)
-    Xn = np.random.normal(size=L)  # normal sequence
-    z = dist_obj.rvs(size=L)  # Desired distribution sequence
+    Xn = np.random.normal(size=L) # normal sequence
+    z = dist_obj.rvs(size=L) # Desired distribution sequence
     names = ['linear', 'exp', 'exp*cos', 'bessel']
-    targetACFs = [1 - np.minimum(m, 100) / 100, np.exp(-0.05 * np.abs(m)),
-                  np.exp(-0.05 * np.abs(m)) * np.cos(0.25 * np.abs(m)), np.array(j0(0.1 * np.pi * abs(m)))]
+    targetACFs = [1 - np.minimum(m,100)/100, np.exp(-0.05*np.abs(m)),np.exp(-0.05*np.abs(m))*np.cos(0.25*np.abs(m)), np.array(j0(0.1*np.pi*abs(m)))]
 
     for i, desiredACF in enumerate(targetACFs):
-        ro_x = find_ro_x(d, desiredACF)  # find appropriate ro_x
-        ar, ma = get_arma_filter(ro_x)  # finding the appropriate filter to get the target ACF
-        x = lfilter(ma, ar, Xn)  # normal sequence
-        y = get_ranked_sequence(x, z)  # rank matching the sequence
-        yCorr = sm.tsa.acf(y, nlags=len(desiredACF) - 1, fft=True)  # the achieved ACF of target distribution
-        plt.plot(m, yCorr, 'o', mfc='none', markersize=5, label=f'achieved {names[i]} ACF')
+        ro_x = find_ro_x(d, desiredACF) # find appropriate ro_x
+        ar, ma = get_arma_filter(ro_x) # finding the appropriate filter to get the target ACF
+        x = lfilter(ma, ar, Xn) # normal sequence
+        y = get_ranked_sequence(x, z) # rank matching the sequence
+        yCorr = sm.tsa.acf(y, nlags = len(desiredACF)-1, fft = True) # the achieved ACF of target distribution
+        plt.plot(m, yCorr, '--', markersize=5, label = f'achieved {names[i]} ACF')
         plt.grid()
 
     plt.gca().set_prop_cycle(None)
     for i, acf in enumerate(targetACFs):
-        plt.plot(acf, label=f'target {names[i]} ACF')
+        plt.plot(acf, label = f'target {names[i]} ACF')
     plt.title(f'ACF tests on {dist_name} distribution')
     plt.grid()
     plt.xlabel('lags')
