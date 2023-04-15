@@ -5,7 +5,8 @@ import scipy
 from scipy.signal import lfilter
 from scipy.stats import rayleigh, triang, laplace, uniform, expon
 from scipy.special import j0
-import generate_corr_sequence as gcs
+import sys
+sys.path.append("..")
 from generate_corr_sequence import findCoeff, find_ro_x, get_arma_filter, get_ranked_sequence
 
 #change to pytest in the future?
@@ -16,7 +17,7 @@ def test_d():
     dRayleighArticle = np.array([0.9724690, 0.0264400, 0.0010467, 0.0000113, 0.0000310, 0.0000017, 0.0000007])
     try:
         np.testing.assert_allclose(dRayleighArticle, dRayleighCode, rtol=rtol, atol=0)
-        print("Rayleigh coeffs successfuly match")
+        print("Rayleigh coeffs successfully match")
     except:
         print("Rayleigh coeffs don't match")
         print(f"\tTarget coeffs:\n{dRayleighArticle}")
@@ -26,7 +27,7 @@ def test_d():
     dLaplaceArticle = np.array([0.9632098, 0, 0.0352063, 0, 0.0013255, 0, 0.0002592])
     try:
         np.testing.assert_allclose(dLaplaceArticle, dLaplaceCode, rtol=rtol, atol=0)
-        print("Laplce coeffs successfuly match")
+        print("Laplace coeffs successfully match")
     except:
         print("Laplace coeffs don't match")
         print(f"Target coeffs:\n{dLaplaceArticle}")
@@ -36,7 +37,7 @@ def test_d():
     dUniformArticle = np.array([0.9550627, 0, 0.0397943, 0, 0.0044768, 0, 0.0006662])
     try:
         np.testing.assert_allclose(dUniformArticle, dUniformCode, rtol=rtol, atol=0)
-        print("Uniform coeffs successfuly match")
+        print("Uniform coeffs successfully match")
     except:
         print("Uniform coeffs don't match")
         print(f"Target coeffs:\n{dUniformArticle}")
@@ -47,7 +48,7 @@ def test_d():
     try:
         np.testing.assert_allclose(dExponArticle, dExponCode, rtol=rtol, atol=0,
                                    err_msg="Exponential coeffs don't match")
-        print("Exponential coeffs successfuly match")
+        print("Exponential coeffs successfully match")
     except:
         print("Exponential coeffs don't match")
         print(f"Target coeffs:\n{dExponArticle}")
@@ -58,7 +59,7 @@ def test_d():
     try:
         np.testing.assert_allclose(dTriangleArticle, dTriangleCode, rtol=rtol, atol=0,
                                    err_msg="Triangle coeffs don't match")
-        print("Triangle coeffs successfuly match")
+        print("Triangle coeffs successfully match")
     except:
         print("Triangle coeffs don't match")
         print(f"\tTarget coeffs:\n\t{dTriangleArticle}")
@@ -75,7 +76,7 @@ def test_ACF(dist_obj=rayleigh):
     LinearCalcACF = np.array(find_ro_x(d, LinearTargetACF))
     try:
         np.testing.assert_allclose(LinearTargetACF, LinearCalcACF, rtol=rtol, atol=0)
-        print("Linear target and calculated ACFs match successfuly")
+        print("Linear target and calculated ACFs match successfully")
     except:
         print("Linear target and calculated ACFs don't match")
         plt.plot(m, LinearTargetACF, label='target ACF')

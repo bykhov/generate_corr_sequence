@@ -42,27 +42,6 @@ Returns
 
 - ``return_type``: A random sequence with pre-defined ACF and PDF with type ``numpy.ndarray``.
 
-References
-----------
-
-[1] Filho, José Cândido Silveira Santos, and Michael Daoud Yacoub. “Coloring Non-Gaussian Sequences.” IEEE TRANSACTIONS ON SIGNAL PROCESSING, vol. 56, no. 12, 2008, p. 6. 
-https://ieeexplore.ieee.org/abstract/document/4633661
-
-[2] Liu, Bede, et al. “Generation of a Random Sequence Having a Jointly Specified Marginal Distribution and Autocovariance.” IEEE TRANSACTIONS ON ACOUSTICS, SPEECH, AND SIGNAL PROCESSING, vol. ASSP-30, no. 6, 1982, p. 11.
-https://ieeexplore.ieee.org/document/1163990
-
-Contributors
-------------
-
-- `Dima Bykhovsky <https://github.com/bykhov>`_
--  `Netanel Tochilovsky <https://github.com/Nati-Toch>`_
-- `Alexander Rudyak <https://github.com/AlexRudyak>`_
-
-License
--------
-
-This project is licensed under the `MIT <./LICENSE.md>`_ license.
-
 Examples
 =============
 
@@ -73,17 +52,17 @@ Default settings, uniform distribution and linear ACF
 
     # Example usage of the function with default settings
     sequence = generate_corr_sequence(debug=True)
-    
+
 Probability Density Funciton before and after the ACF matching process
 ----
 .. image:: ./examples/defaultPDF.png
   :align: center
-  
+
 AutoCorrelation Funciton before and after the ACF matching process
 ----
 .. image:: ./examples/defaultACF.png
   :align: center
-  
+
 
 Rayleigh distribution with exp*cos ACF
 -------
@@ -98,16 +77,42 @@ Rayleigh distribution with exp*cos ACF
     m = np.arange(0, 100)
     desiredACF = np.exp(-0.05 * np.abs(m)) * np.cos(0.25 * np.abs(m))
     sequence = generate_corr_sequence(rayleigh, desiredACF=desiredACF, L=2**20, seed=100, debug=True)
-    
+
 Probability Density Funciton before and after the ACF matching process
 ----
 .. image:: ./examples/exp-0.05mcos0.25mpdf.png
   :align: center
-  
+
 AutoCorrelation Funciton before and after the ACF matching process
 ----
 .. image:: ./examples/exp-0.05mcos0.25macf.png
   :align: center
+
+References
+----------
+The algorithm is based on the following papers:
+
+[1] Filho, José Cândido Silveira Santos, and Michael Daoud Yacoub. “Coloring Non-Gaussian Sequences.” IEEE Transactions on Signal Processing, vol. 56, no. 12, 2008, p. 6.
+
+[2] Liu, Bede, et al. “Generation of a Random Sequence Having a Jointly Specified Marginal Distribution and Autocovariance.” IEEE Transactions on Acoustics, Speech, and Signal Processing, vol. ASSP-30, no. 6, 1982, p. 11.
+
+Contributors
+------------
+
+- `Dima Bykhovsky <https://github.com/bykhov>`_
+-  `Netanel Tochilovsky <https://github.com/Nati-Toch>`_
+- `Alexander Rudyak <https://github.com/AlexRudyak>`_
+
+License
+-------
+
+This project is licensed under the `MIT <./LICENSE.md>`_ license.
+
+Todo
+----
+- numba parallelization
+- custom PDF support
+- different Gaussian distributions high-speed implementation
 
 
 
