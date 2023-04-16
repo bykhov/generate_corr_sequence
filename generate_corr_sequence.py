@@ -226,7 +226,7 @@ def debugPlots(dist_obj, desiredACF, y):
     plt.show()
 
 
-def generate_corr_sequence(dist_obj=uniform,
+def gen_corr_sequence(dist_obj=uniform,
                            desiredACF=1 - np.minimum(np.arange(0, 100), 100) / 100,
                            L=2 ** 20, seed=100,
                            debug=False, showGauss=False):
