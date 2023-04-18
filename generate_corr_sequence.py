@@ -158,7 +158,7 @@ def get_arma_filter(target_acf: np.ndarray, debug: bool = False) -> (np.ndarray,
     converge = False
     while not converge:
         x0 = np.random.rand(6)
-        bounds = [(-10, 10)]*6
+        bounds = [(-10, 10)] * 6
         # res = shgo(cost_function, bounds=bounds,
         #            iters=3,
         #            args=(lags, target_acf),
@@ -247,7 +247,6 @@ def debugPlots(dist_obj, desiredACF: np.ndarray, y: np.ndarray, fileName: str = 
         plt.savefig(fileName + '_acf.png')
     plt.show()
 
-
     plt.figure()
     ax1 = plt.gca()
     qqplot(y, fit=False, line='45', dist=dist_obj, ax=ax1)
@@ -265,9 +264,9 @@ def debugPlots(dist_obj, desiredACF: np.ndarray, y: np.ndarray, fileName: str = 
 
 def gen_corr_sequence(dist_obj=uniform,
                       desiredACF=1 - np.minimum(np.arange(0, 100), 100) / 100,
-                      L: int =2 ** 20,
+                      L: int = 2 ** 20,
                       seed=None,
-                      debug:bool =False,
+                      debug: bool = False,
                       plot_figures_name: str = None,
                       showGauss=False):
     """
@@ -310,11 +309,11 @@ def gen_corr_sequence(dist_obj=uniform,
 
     return y
 
+
 # %% Example
 if __name__ == "__main__":
     from scipy.stats import nakagami
     from scipy.special import j0
-
 
     m = np.arange(0, 100)
     targetACF = np.array(j0(0.1 * np.pi * abs(m)))
@@ -323,6 +322,4 @@ if __name__ == "__main__":
         desiredACF=np.array(j0(0.1 * np.pi * abs(m))),
         debug=True)
 
-
-
-#%%
+# %%
