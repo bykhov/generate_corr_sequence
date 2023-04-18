@@ -170,8 +170,4 @@ if __name__ == '__main__':
     test_ACF(rayleigh) # test that passes
     test_ACF(expon) # test that fails
 
-    # example of generation of autoccorelated sequence test:
-    ACFnames = ['ryleigh', 'uniform', 'triangular', 'exponential', 'laplace']
-    for i, acf in enumerate([rayleigh, uniform, triang(c=0.5, loc=-np.sqrt(6), scale=2 * np.sqrt(6)), expon, laplace]):
-        DrawTestPlots(acf, ACFnames[i])
 

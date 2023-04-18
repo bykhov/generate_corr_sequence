@@ -10,7 +10,7 @@ from scipy.stats import norm, uniform, triang, probplot
 from scipy.special import erfinv, eval_hermitenorm
 from scipy.integrate import quad
 import scipy.io
-from scipy.optimize import minimize
+from scipy.optimize import minimize, basinhopping, shgo
 import matplotlib.pyplot as plt
 
 
@@ -101,14 +101,19 @@ def find_ro_x(d, desiredACF):
 
 # %% MSE cost function for ARMA optimization
 def mse(result: np.ndarray, target: np.ndarray) -> np.ndarray:
-    """Mean Squared Error"""
+    """Mean Squared Error
+    input:
+        result - theoretical ACF
+        target - target ACF
+    output:
+        score - clipped MSE score"""
     score = np.mean(np.square(np.clip(result, -1e5, 1e5) - target))
     return score
 
 
 # %% ar, ma <-> vector
 def ar_ma_to_vector(ar: np.ndarray, ma: np.ndarray) -> np.ndarray:
-    """Convert ARMA to vector"""
+    """Convert ARMA(p,q) coefficients to vector"""
     return np.concatenate((ar[1:], ma[1:]))
 
 
@@ -133,25 +138,46 @@ def my_arma_acf(x, lags: int) -> np.ndarray:
 
 
 # %% Optimization cost function
-def cost_function(x, lags, target_acf):
+def cost_function(x: np.ndarray, target_acf: np.ndarray) -> np.ndarray:
     """Cost function for ARMA optimization
     input:
     x - vector of ARMA coefficients
-    lags - amount of lag in the autocorrelation
     """
+    lags = len(target_acf)
     try:
         R = my_arma_acf(x, lags)  # theoretical ACF
-    except:
-        return 1e10
+    except:  # if ARMA coefficients are not stable - replace by optimization constraints in the future
+        return np.array([1e10])
     return mse(R, target_acf)
 
 
 # %% ARMA model
-def get_arma_filter(target_acf):
+def get_arma_filter(target_acf: np.ndarray, debug: bool = False) -> (np.ndarray, np.ndarray):
     lags = len(target_acf)
-    x0 = np.array([-0.5, 0.5, -0.5, 0.5, -0.5, 0.5])
-    res = minimize(cost_function, x0, args=(lags, target_acf), method='nelder-mead',
-                   options={'xatol': 1e-5, 'disp': True})
+    # x0 = np.array([-0.5, 0.5, -0.5, 0.5, -0.5, 0.5])
+    converge = False
+    while not converge:
+        x0 = np.random.rand(6)
+        bounds = [(-10, 10)]*6
+        # res = shgo(cost_function, bounds=bounds,
+        #            iters=3,
+        #            args=(lags, target_acf),
+        #            options={'disp': False})
+        res = basinhopping(cost_function, x0,
+                           niter=300,
+                           minimizer_kwargs={'args': target_acf})
+        # res = minimize(cost_function, x0, args=(lags, target_acf),
+        #                method='nelder-mead',
+        #                options={'adaptive': True,
+        #                         'fatol': 1e-5,
+        #                         'xatol': 1e-5,
+        #                         'maxfev': 5000,
+        #                         'maxiter': 5000,
+        #                         'disp': debug})
+        if res.fun != 1e10:
+            converge = True
+            # if debug:
+            #     print(res.success, res.fun, res.message, res.nit)
     ar, ma = vector_to_ar_ma(res.x)
     return ar, ma
 
@@ -173,7 +199,7 @@ def get_ranked_sequence(x, z):
     return y
 
 
-def debugPlots(dist_obj, desiredACF, y):
+def debugPlots(dist_obj, desiredACF: np.ndarray, y: np.ndarray, fileName: str = None):
     """
     This Function will draw plots of the achieved PDF and ACF.
 
@@ -189,53 +215,64 @@ def debugPlots(dist_obj, desiredACF, y):
         "figure.facecolor": (1.0, 1.0, 1.0, 1),
         "axes.facecolor": (1.0, 1.0, 1.0, 1),
         "savefig.facecolor": (1.0, 1.0, 1.0, 1),
+        "figure.dpi": 300,
+        "figure.figsize": (4, 3),
     })
 
-    plt.subplot(311)
     pdfxAxis = np.linspace(dist_obj.ppf(1e-15), dist_obj.ppf(1 - 1e-15), 1000)
+    plt.figure()
     plt.title('Resulting PDF')
-    plt.rcParams["figure.figsize"] = (8, 4)
-    plt.rcParams['figure.dpi'] = 100
     plt.plot(pdfxAxis, dist_obj.pdf(pdfxAxis), label="Required PDF")
     plt.hist(y, bins='auto', label="Simulated PDF", **kwargs)
     plt.xlabel('x')
-    plt.ylabel('P(x)')
-    plt.grid(True)
-    plt.legend(loc='upper right')
+    plt.ylabel('f_x(x)')
+    plt.grid()
+    plt.legend(loc='best')
+    if fileName is not None:
+        plt.savefig(fileName + '_pdf.png')
+    plt.show()
 
-    plt.subplot(312)
+    plt.figure()
     plt.title('Resulting ACF')
-    plt.rcParams["figure.figsize"] = (8, 4)
-    plt.rcParams['figure.dpi'] = 100
-    plt.plot(yCorr, '-.', label='Simulated ACF')
+    plt.plot(yCorr, '-', label='Simulated ACF')
     plt.plot(desiredACF, '--', alpha=0.5, label='Required ACF')
     plt.xlabel('Lags')
-    plt.ylabel('ACC')
-    plt.legend(loc='upper right')
-    plt.grid(True)
+    plt.ylabel('ACF')
+    plt.xlim([0, len(desiredACF) - 1])
+    plt.grid()
+    plt.legend(loc='best')
+    if fileName is not None:
+        plt.savefig(fileName + '_acf.png')
+    plt.show()
 
-    plt.subplot(313)
+
+    plt.figure()
     ax1 = plt.gca()
     qqplot(y, fit=False, line='45', dist=dist_obj, ax=ax1)
     fig = plt.gcf()
-    fig.set_size_inches(5, 15)
+    # fig.set_size_inches(5, 15)
     ax1.set_title('Distribution Q-Q Plot')
     ax1.set_xlabel('Theoretical Quantiles')
     ax1.set_ylabel('Sample Quantiles')
     ax1.grid(True)
+    if fileName is not None:
+        plt.savefig(fileName + '_qq.png')
     plt.show()
 
 
 def gen_corr_sequence(dist_obj=uniform,
-                           desiredACF=1 - np.minimum(np.arange(0, 100), 100) / 100,
-                           L=2 ** 20, seed=100,
-                           debug=False, showGauss=False):
+                      desiredACF=1 - np.minimum(np.arange(0, 100), 100) / 100,
+                      L: int =2 ** 20,
+                      seed=None,
+                      debug:bool =False,
+                      plot_figures_name: str = None,
+                      showGauss=False):
     """
     This Function will create a vector (sequence) of samples with the desired
     AutoCorrelation Function and distribution.
 
     Input:
-    dist_obj   - The deisred distibution, default is uniform.
+    dist_obj   - The desired distribution, default is uniform.
     desiredACF - Vector of the target ACF function.
     L          - Number of samples in the output sequence, default is 2^20.
     seed       - Seed for the random number generator.
@@ -245,7 +282,8 @@ def gen_corr_sequence(dist_obj=uniform,
     y          - An np.ndarray of samples with desired ACF and PDF, np.shape = (L, ).
     """
 
-    np.random.seed(seed)
+    if seed is not None:
+        np.random.seed(seed)
 
     d = findCoeff(dist_obj)
 
@@ -253,7 +291,7 @@ def gen_corr_sequence(dist_obj=uniform,
 
     Xn = np.random.normal(size=L)  # normal sequence
 
-    ar, ma = get_arma_filter(ro_x)  # finding the appropriate filter to get the target ACF
+    ar, ma = get_arma_filter(ro_x, debug)  # finding the appropriate filter to get the target ACF
 
     x = lfilter(ma, ar, Xn)
 
@@ -265,11 +303,23 @@ def gen_corr_sequence(dist_obj=uniform,
     y = get_ranked_sequence(x, z)  # rank matching the sequence
 
     if debug:
-        debugPlots(dist_obj, desiredACF, y)
+        debugPlots(dist_obj, desiredACF, y, plot_figures_name)
 
     return y
 
+# %% Example
 if __name__ == "__main__":
-    signal = generate_corr_sequence(debug=True)
+    from scipy.stats import nakagami
+    from scipy.special import j0
+
+
+    m = np.arange(0, 100)
+    targetACF = np.array(j0(0.1 * np.pi * abs(m)))
+    signal = gen_corr_sequence(
+        dist_obj=nakagami(nu=1),
+        desiredACF=np.array(j0(0.1 * np.pi * abs(m))),
+        debug=True)
+
+
 
 #%%
