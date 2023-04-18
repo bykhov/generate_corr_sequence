@@ -78,13 +78,15 @@ signal = gen_corr_sequence(
 <img src="./examples/nakagami_acf.png" alt="Autocorrelation function" width="50%" height="50%" />
 
 ## Notes
-1. The code is slow and takes about 2 seconds to generate a default-length sequence.
-2. The example of code repeatability is provided in the `examples/nakagami_example.ipynb` notebook as extension of Nakagami distribution example. The sequence is generated 20 times with ACFs as follows.
+1. There is no responsibility for the correctness of the results. It may work and it may not - use debug option to check the results. 
+2. Examples for different distributions (uniform, exponential, Laplace, Rayleigh, triangle) and different ACFs are provided in the `tests` folder.
+      The `tests/test+PDFs.ipynb` file used for generation of the figures in the directory.
+3. The code is slow and takes about 2 seconds to generate a default-length sequence.
+3. The example of code repeatability is provided in the `examples/nakagami_example.ipynb` notebook as extension of Nakagami distribution example. The sequence is generated 20 times with ACFs as follows.
 
 <img src="./examples/nakagami_acf_20.png" alt="Autocorrelation function" width="50%" height="50%" />
 
-3. Examples for different distributions (uniform, exponential, Laplace, Rayleigh, triangle) and different ACFs are provided in the `tests` folder. 
-The `tests/test+PDFs.ipynb` file used for generation of the figures in the directory.
+
 
 ## References
 

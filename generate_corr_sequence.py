@@ -229,6 +229,7 @@ def debugPlots(dist_obj, desiredACF: np.ndarray, y: np.ndarray, fileName: str = 
     plt.grid()
     plt.legend(loc='best')
     if fileName is not None:
+        plt.tight_layout()
         plt.savefig(fileName + '_pdf.png')
     plt.show()
 
@@ -242,6 +243,7 @@ def debugPlots(dist_obj, desiredACF: np.ndarray, y: np.ndarray, fileName: str = 
     plt.grid()
     plt.legend(loc='best')
     if fileName is not None:
+        plt.tight_layout()
         plt.savefig(fileName + '_acf.png')
     plt.show()
 
@@ -256,6 +258,7 @@ def debugPlots(dist_obj, desiredACF: np.ndarray, y: np.ndarray, fileName: str = 
     ax1.set_ylabel('Sample Quantiles')
     ax1.grid(True)
     if fileName is not None:
+        plt.tight_layout()
         plt.savefig(fileName + '_qq.png')
     plt.show()
 
