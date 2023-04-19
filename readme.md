@@ -22,7 +22,7 @@ Usage:
 
 ```python
 gen_corr_sequence(dist_obj=uniform,
-                  desiredACF=1 - np.minimum(np.arange(0, 100), 100) / 100,
+                  target_acf=1 - np.minimum(np.arange(0, 100), 100) / 100,
                   L: int = 2 ** 20,
                   seed=None,
                   debug: bool = False,
@@ -35,7 +35,7 @@ gen_corr_sequence(dist_obj=uniform,
 - `dist_obj` - A distribution object from
   [scipy.stats](https://docs.scipy.org/doc/scipy/reference/stats.html),
   default is `uniform`.
-- `desiredACF` - A desired ACF function with `m` as a variable,
+- `target_acf` - A desired ACF function with `m` as a variable,
   default is a linear function
 - `L` - Number of desired samples
 - `seed` - Number as input for the random number generator
@@ -49,7 +49,9 @@ Returns:
 ## Examples
 
 ### Default settings with uniform distribution and linear ACF
+
 The example below shows the default settings of the function from the `examples/default_settings_example.ipynb` file.
+
 ```python
 # Example usage of the function with default settings
 sequence = generate_corr_sequence(debug=True)
@@ -59,50 +61,53 @@ sequence = generate_corr_sequence(debug=True)
 <img src="./examples/default_acf.png" alt="Autocorrelation function" width="50%" height="50%" />
 
 ### Nakagami distribution with Bessel function ACF
+
 The example below is from the `examples/nakagami_example.ipynb` file.
+
 ```python
 # Example usage of the function with Nakagami distribution and an autocorrelation function
 from generate_corr_sequence import gen_corr_sequence
 import numpy as np
 from scipy.stats import nakagami
 from scipy.special import j0
-
 # %%
 m = np.arange(0, 100)
 signal = gen_corr_sequence(
     dist_obj=nakagami(nu=1),
-    desiredACF=np.array(j0(0.1 * np.pi * abs(m))),
+    target_acf=np.array(j0(0.1 * np.pi * abs(m))),
     debug=True)
 ```
 
 <img src="./examples/nakagami_pdf.png" alt="Probability density function" width="50%" height="50%" />
 <img src="./examples/nakagami_acf.png" alt="Autocorrelation function" width="50%" height="50%" />
+<img src="./examples/nakagami_qq.png" alt="Autocorrelation function" width="50%" height="50%" />
+
 
 ## Notes
-1. There is no responsibility for the correctness of the results. It may work and it may not - use debug option to check the results. 
-2. Examples for different distributions (uniform, exponential, Laplace, Rayleigh, triangle) and different ACFs are provided in the `tests` folder.
-      The `tests/test+PDFs.ipynb` file used for generation of the figures in the directory.
-3. It takes about 2 seconds to generate a default-length sequence.
-3. The example of code repeatability is provided in the `examples/nakagami_example.ipynb` notebook as extension of Nakagami distribution example. The sequence is generated 20 times with ACFs as follows.
+
+1. There is no responsibility for the correctness of the results. It may work and it may not - use debug option to check the results.
+2. Examples for different distributions (uniform, exponential, Laplace, Rayleigh, triangle,
+   gamma, lognormal, Nakagami) and four different ACFs are provided in the `examples/evaluation/` folder.
+   The `evaluate_PDFs.ipynb` file used for generation of all the ACF figures in the directory.
+3. It takes about 2-3 seconds to generate a single default-length sequence.
+4. The example of code repeatability is provided in the `examples/nakagami_example.ipynb` notebook as extension of Nakagami distribution example. The sequence is generated 20 times with ACFs as follows.
 
 <img src="./examples/nakagami_acf_20.png" alt="Autocorrelation function" width="50%" height="50%" />
-
-
 
 ## References
 
 The algorithm is mainly based on the following papers:
 
 1. Filho, José Cândido Silveira Santos, and Michael Daoud Yacoub.
-"Coloring Non-Gaussian Sequences." IEEE Transactions on Signal
-Processing, vol. 56, no. 12, 2008, p. 6.
-
+   "Coloring Non-Gaussian Sequences." IEEE Transactions on Signal
+   Processing, vol. 56, no. 12, 2008, p. 6.
 2. Liu, Bede, et al. "Generation of a Random Sequence Having a
-Jointly Specified Marginal Distribution and Autocovariance." IEEE
-Transactions on Acoustics, Speech, and Signal Processing, vol. ASSP-30,
-no. 6, 1982, p. 11.
+   Jointly Specified Marginal Distribution and Autocovariance." IEEE
+   Transactions on Acoustics, Speech, and Signal Processing, vol. ASSP-30,
+   no. 6, 1982, p. 11.
 
 ## Contributors
+
 [Dima Bykhovsky](https://github.com/bykhov), [Netanel Tochilovsky](https://github.com/Nati-Toch), [Alexander Rudyak](https://github.com/AlexRudyak)
 
 ## License
@@ -112,4 +117,5 @@ This project is licensed under the [MIT](./LICENSE.md) license.
 ## Todo
 
 - custom (non-scipy) distributions support
-- higher-speed algorithm for Gaussian distributions 
+- higher-speed algorithm for Gaussian distributions
+- fix lognormal distribution problem for oscillatory ACFs

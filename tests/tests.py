@@ -142,12 +142,12 @@ def DrawTestPlots(dist_obj = rayleigh, dist_name = 'rayleigh'):
     names = ['linear', 'exp', 'exp*cos', 'bessel']
     targetACFs = [1 - np.minimum(m,100)/100, np.exp(-0.05*np.abs(m)),np.exp(-0.05*np.abs(m))*np.cos(0.25*np.abs(m)), np.array(j0(0.1*np.pi*abs(m)))]
 
-    for i, desiredACF in enumerate(targetACFs):
-        ro_x = find_ro_x(d, desiredACF) # find appropriate ro_x
+    for i, target_acf in enumerate(targetACFs):
+        ro_x = find_ro_x(d, target_acf) # find appropriate ro_x
         ar, ma = get_arma_filter(ro_x) # finding the appropriate filter to get the target ACF
         x = lfilter(ma, ar, Xn) # normal sequence
         y = get_ranked_sequence(x, z) # rank matching the sequence
-        yCorr = sm.tsa.acf(y, nlags = len(desiredACF)-1, fft = True) # the achieved ACF of target distribution
+        yCorr = sm.tsa.acf(y, nlags = len(target_acf)-1, fft = True) # the achieved ACF of target distribution
         plt.plot(m, yCorr, '--', markersize=5, label = f'achieved {names[i]} ACF')
         plt.grid()
 

@@ -3,10 +3,9 @@ from numpy import ndarray
 import statsmodels.api as sm
 from statsmodels.tsa.arima_process import arma_acf
 from statsmodels.graphics.tsaplots import plot_acf
-from statsmodels.graphics.gofplots import qqplot_2samples, qqplot
 import scipy
 from scipy.signal import lfilter
-from scipy.stats import norm, uniform, triang, probplot
+from scipy.stats import norm, uniform, lognorm
 from scipy.special import erfinv, eval_hermitenorm
 from scipy.integrate import quad
 from scipy.optimize import minimize, basinhopping, shgo
@@ -32,7 +31,6 @@ def findCoeff(dist_obj=uniform):
     amount_of_consecutive_zeroes = 2
     integration_min = dist_obj.ppf(1e-15)  # The minimum value of x for which Fy(x) is defined
     integration_max = dist_obj.ppf(1 - 1e-15)  # The maximum value of x for which Fy(x) is defined
-    # patch for lognormal distribution
     try:  # not all distributions have dist attribute
         if dist_obj.dist.name == 'lognorm':
             integration_max = dist_obj.ppf(1 - 1e-15) / 100
@@ -166,13 +164,16 @@ def get_arma_filter(target_acf: np.ndarray, debug: bool = False) -> (np.ndarray,
         x0 = np.random.rand(6)
         bounds = [(-10, 10)] * 6
         # res = shgo(cost_function, bounds=bounds,
-        #            iters=3,
-        #            args=(lags, target_acf),
-        #            options={'disp': False})
+        #            iters=1,
+        #            args=(target_acf,),
+        #            options={'disp': True})
         res = basinhopping(cost_function, x0,
-                           niter=300,
+                           niter=1000,
+                           stepsize=5,
+                           T=2.0,
+                           # niter_success=20,
                            minimizer_kwargs={'args': target_acf})
-        # res = minimize(cost_function, x0, args=(lags, target_acf),
+        # res = minimize(cost_function, x0, args=(target_acf),
         #                method='nelder-mead',
         #                options={'adaptive': True,
         #                         'fatol': 1e-5,
@@ -180,14 +181,14 @@ def get_arma_filter(target_acf: np.ndarray, debug: bool = False) -> (np.ndarray,
         #                         'maxfev': 5000,
         #                         'maxiter': 5000,
         #                         'disp': debug})
-        # if debug:
-        #     print(res.success, res.fun, res.message, res.nit)
+        print(res.success, res.fun, res.message, res.nit)
         if res.fun != 1e10:
             if res.fun > 0.01:
                 # warnings.simplefilter('module',UserWarning)
                 warnings.warn('The optimization did not converge to the target ACF.')
             break
-
+            # if debug:
+            #     print(res.success, res.fun, res.message, res.nit)
     ar, ma = vector_to_ar_ma(res.x)
     return ar, ma
 
@@ -239,9 +240,8 @@ def debugPlots(dist_obj, target_acf: np.ndarray, y: np.ndarray, fileName: str = 
     plt.title('Resulting PDF')
     plt.plot(pdfxAxis, dist_obj.pdf(pdfxAxis), label="Required PDF")
     plt.hist(y, bins='auto', label="Simulated PDF", **kwargs)
-    plt.xlim(
-        (dist_obj.ppf(1e-15),
-         min(pdfxAxis.max(), plt.gca().get_xlim()[1])))  # handle long-tail distributions
+    # handle long-tail distributions
+    plt.xlim([dist_obj.ppf(1e-15), min(pdfxAxis.max(), plt.gca().get_xlim()[1])])
     plt.xlabel('x')
     plt.ylabel('f_x(x)')
     plt.grid()
@@ -322,8 +322,12 @@ if __name__ == "__main__":
     m = np.arange(0, 100)
     targetACF = np.array(j0(0.1 * np.pi * abs(m)))
     signal = gen_corr_sequence(
-        dist_obj=nakagami(nu=1),
+        dist_obj=lognorm(s=1),
         target_acf=np.array(j0(0.1 * np.pi * abs(m))),
         debug=True)
 
-# %%
+    # %%
+    signal = gen_corr_sequence(
+        dist_obj=lognorm(s=1),
+        target_acf=np.exp(-0.05 * np.abs(m)),
+        debug=True)
