@@ -236,6 +236,7 @@ def debugPlots(dist_obj, target_acf: np.ndarray, y: np.ndarray, fileName: str = 
     except:  # nothing to do here
         pass
     plt.figure()
+    plt.subplot(2, 1, 1)
     plt.title('Resulting PDF')
     plt.plot(pdfxAxis, dist_obj.pdf(pdfxAxis), label="Required PDF")
     plt.hist(y, bins='auto', label="Simulated PDF", **kwargs)
@@ -243,15 +244,11 @@ def debugPlots(dist_obj, target_acf: np.ndarray, y: np.ndarray, fileName: str = 
         (dist_obj.ppf(1e-15),
          min(pdfxAxis.max(), plt.gca().get_xlim()[1])))  # handle long-tail distributions
     plt.xlabel('x')
-    plt.ylabel('f_x(x)')
+    plt.ylabel('$f_x(x)$')
     plt.grid()
-    plt.legend(loc='best')
-    if fileName is not None:
-        plt.tight_layout()
-        plt.savefig(fileName + '_pdf.png')
-    plt.show()
+    plt.legend()
 
-    plt.figure()
+    plt.subplot(2, 1, 2)
     plt.title('Resulting ACF')
     plt.plot(target_acf, '-', alpha=0.5, label='Required ACF')
     plt.plot(yCorr, '--', label='Simulated ACF')
@@ -259,10 +256,10 @@ def debugPlots(dist_obj, target_acf: np.ndarray, y: np.ndarray, fileName: str = 
     plt.ylabel('ACF')
     plt.xlim([0, len(target_acf) - 1])
     plt.grid()
-    plt.legend(loc='best')
+    plt.legend(loc='upper right')
     if fileName is not None:
         plt.tight_layout()
-        plt.savefig(fileName + '_acf.png')
+        plt.savefig(fileName)
     plt.show()
 
 
@@ -271,8 +268,7 @@ def gen_corr_sequence(dist_obj=uniform,
                       L: int = 2 ** 20,
                       seed=None,
                       debug: bool = False,
-                      plot_figures_name: str = None,
-                      showGauss=False):
+                      plot_figures_name: str = None):
     """
     This Function will create a vector (sequence) of samples with the desired
     AutoCorrelation Function and distribution.
@@ -286,7 +282,26 @@ def gen_corr_sequence(dist_obj=uniform,
 
     Output:
     y          - An np.ndarray of samples with desired ACF and PDF, np.shape = (L, ).
+
+    Example:
+        import numpy as np
+        from scipy.stats import nakagami
+        from scipy.special import j0
+        from generate_corr_sequence import gen_corr_sequence
+
+        dist_obj = nakagami(nu=1)
+        m = np.arange(0, 100)
+        target_acf = np.array(j0(0.1 * np.pi * abs(m)))
+        signal = gen_corr_sequence(
+            dist_obj=dist_obj,
+            target_acf=target_acf,
+            debug=True)
     """
+    if len(target_acf) > L -1:
+        raise ValueError('The length of the target ACF vector is too long for the required sequence length.')
+
+    if plot_figures_name is not None and debug is False:
+        warnings.warn('plot_figures_name is not used when debug is False.')
 
     if seed is not None:
         np.random.seed(seed)
@@ -299,10 +314,7 @@ def gen_corr_sequence(dist_obj=uniform,
 
     ar, ma = get_arma_filter(ro_x, debug)  # finding the appropriate filter to get the target ACF
 
-    x = lfilter(ma, ar, Xn)
-
-    if showGauss:
-        debugPlots(dist_obj, target_acf, x)
+    x = lfilter(ma, ar, Xn)  # applying the filter to the normal sequence
 
     z = dist_obj.rvs(size=L)  # Desired distribution sequence
 
@@ -320,10 +332,10 @@ if __name__ == "__main__":
     from scipy.special import j0
 
     m = np.arange(0, 100)
-    targetACF = np.array(j0(0.1 * np.pi * abs(m)))
+    target_acf = np.array(j0(0.1 * np.pi * abs(m)))
     signal = gen_corr_sequence(
         dist_obj=nakagami(nu=1),
-        target_acf=np.array(j0(0.1 * np.pi * abs(m))),
+        target_acf=target_acf,
         debug=True)
 
 # %%

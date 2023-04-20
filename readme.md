@@ -15,32 +15,31 @@
 
 ## Summary
 
-This Python function creates a time-series (random process) with a specific
-autocorrelation function (ACF) and probability distribution, e.g with predefined probability density function (PDF).
+This Python function creates a time-series (discrete-time random process) with a specific
+autocorrelation function (ACF) and continuous probability distribution, e.g with predefined probability density function (PDF).
 
 Usage:
 
 ```python
+from generate_corr_sequence import gen_corr_sequence
 gen_corr_sequence(dist_obj=uniform,
                   target_acf=1 - np.minimum(np.arange(0, 100), 100) / 100,
                   L: int = 2 ** 20,
                   seed=None,
                   debug: bool = False,
-                  plot_figures_name: str = None,
                   plot_figures_name: str = None)
 ```
 
 ### Arguments
 
-- `dist_obj` - A distribution object from
+- `dist_obj` - A continuous distribution object from
   [scipy.stats](https://docs.scipy.org/doc/scipy/reference/stats.html),
-  default is `uniform`.
-- `target_acf` - A desired ACF function with `m` as a variable,
-  default is a linear function
-- `L` - Number of desired samples
-- `seed` - Number as input for the random number generator
-- `debug` - Plots intermidiate graphs
-- `plot_figures_name` - Name of the debug figures to be saved, only when `debug` is `True`
+  default is `uniform`
+- `target_acf` - A required ACF function, default is a linear function
+- `L` - Number of required samples
+- `seed` - Seed of the random number generator
+- `debug` - Plots PDF and ACF graphs
+- `plot_figures_name` - Filename of the debug figure to be saved, only when `debug` is `True`. In no extension is provided, the default is `png`.
 
 Returns:
 
@@ -57,8 +56,7 @@ The example below shows the default settings of the function from the `examples/
 sequence = generate_corr_sequence(debug=True)
 ```
 
-<img src="./examples/default_pdf.png" alt="Probability density function" width="50%" height="50%" />
-<img src="./examples/default_acf.png" alt="Autocorrelation function" width="50%" height="50%" />
+<img src="./examples/default.png" alt="Debug figure" width="50%" height="50%" />
 
 ### Nakagami distribution with Bessel function ACF
 
@@ -78,8 +76,7 @@ signal = gen_corr_sequence(
     debug=True)
 ```
 
-<img src="./examples/nakagami_pdf.png" alt="Probability density function" width="50%" height="50%" />
-<img src="./examples/nakagami_acf.png" alt="Autocorrelation function" width="50%" height="50%" />
+<img src="./examples/nakagami.png" alt="Debug figure" width="50%" height="50%" />
 <img src="./examples/nakagami_qq.png" alt="Autocorrelation function" width="50%" height="50%" />
 
 
