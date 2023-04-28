@@ -53,7 +53,7 @@ The example below shows the default settings of the function from the `examples/
 
 ```python
 # Example usage of the function with default settings
-sequence = generate_corr_sequence(debug=True)
+sequence = gen_corr_sequence(debug=True)
 ```
 
 <img src="./examples/default.png" alt="Debug figure" width="50%" height="50%" />
@@ -90,6 +90,10 @@ signal = gen_corr_sequence(
 4. The example of code repeatability is provided in the `examples/nakagami_example.ipynb` notebook as extension of Nakagami distribution example. The sequence is generated 20 times with ACFs as follows.
 
 <img src="./examples/nakagami_acf_20.png" alt="Autocorrelation function" width="50%" height="50%" />
+
+## Installation
+Use:
+    `pip install generate_corr_sequence`
 
 ## References
 
