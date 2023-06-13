@@ -35,7 +35,12 @@ def findCoeff(dist_obj=uniform):
     # patch for lognormal distribution
     try:  # not all distributions have dist attribute
         if dist_obj.dist.name == 'lognorm':
-            integration_max = dist_obj.ppf(1 - 1e-15) / 100
+            integration_max_10 = dist_obj.mean() + dist_obj.std()*10
+            if integration_max > integration_max_10:
+                integration_max = integration_max_10
+            integration_min_10 = dist_obj.mean() - dist_obj.std()*10
+            if integration_min < integration_min_10:
+                integration_min = integration_min_10
     except:  # nothing to do here
         pass
 
@@ -227,22 +232,19 @@ def debugPlots(dist_obj, target_acf: np.ndarray, y: np.ndarray, fileName: str = 
         "savefig.facecolor": (1.0, 1.0, 1.0, 1),
         "figure.dpi": 300,
         "figure.figsize": (4, 3),
+        "font.size": 10,
     })
 
-    pdfxAxis = np.linspace(dist_obj.ppf(1e-15), dist_obj.ppf(1 - 1e-15), 1000)
-    try:  # not all distributions have dist attribute
-        if dist_obj.dist.name == 'lognorm':
-            pdfxAxis = np.linspace(dist_obj.ppf(1e-15), dist_obj.std() * 5, 1000)
-    except:  # nothing to do here
-        pass
+    pdfxAxis = np.linspace(max(dist_obj.ppf(1e-15), dist_obj.mean() - dist_obj.std()*5),
+                           min(dist_obj.ppf(1 - 1e-15), dist_obj.mean() + dist_obj.std()*5),
+                           1000)
     plt.figure()
     plt.subplot(2, 1, 1)
     plt.title('Resulting PDF')
     plt.plot(pdfxAxis, dist_obj.pdf(pdfxAxis), label="Required PDF")
     plt.hist(y, bins='auto', label="Simulated PDF", **kwargs)
     plt.xlim(
-        (dist_obj.ppf(1e-15),
-         min(pdfxAxis.max(), plt.gca().get_xlim()[1])))  # handle long-tail distributions
+        (np.min(pdfxAxis), np.max(pdfxAxis)))  # handle long-tail distributions
     plt.xlabel('x')
     plt.ylabel('$f_x(x)$')
     plt.grid()
