@@ -1,0 +1,49 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Generate stationary correlated time-series
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Dima
+    family-names: Bykhovsky
+    orcid: 'https://orcid.org/0000-0003-4468-7791'
+  - given-names: Netanel
+    family-names: Tochilovsky
+  - given-names: Alexander
+    family-names: Rudyak
+    orcid: 'https://orcid.org/0009-0005-0985-3434'
+repository-code: 'https://github.com/bykhov/generate_corr_sequence'
+abstract: >-
+  This Python function creates a time-series (discrete-time
+  random process) with a specific autocorrelation function
+  (ACF) and continuous probability distribution, e.g with
+  predefined probability density function (PDF).
+keywords:
+  - Python
+  - time-series
+  - simulation
+  - wss
+  - autocorrelation
+  - random-process
+  - autocovariance
+license: MIT
+preferred-citation:
+  type: conference-paper
+  authors:
+  - family-names: "Bykhovsky"
+    given-names: "Dima"
+  - family-names: "Tochilovsky"
+    given-names: "Netanel"
+  - family-names: "Rudyak"
+    given-names: "Alexander"
+  doi: "10.1109/ICECET58911.2023.10389427"
+  journal: "2023 International Conference on Electrical, Computer and Energy Technologies (ICECET)"
+  month: 11
+  start: 1 # First page number
+  end: 6 # Last page number
+  title: "Python-Based Simulation of Non-Gaussian Stationary Random Process with Arbitrary Auto-Correlation Function"
+  year: 2023
